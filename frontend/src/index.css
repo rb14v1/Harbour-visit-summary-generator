@@ -1,0 +1,250 @@
+:root {
+  --color-bg: #f7f8fb;
+  --color-card: #ffffff;
+  --color-border: #e2e5ec;
+  --color-text: #1f2430;
+  --color-muted: #6b7280;
+  --color-primary: #0f766e;
+  --color-danger: #dc2626;
+  --color-success: #059669;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.btn-secondary {
+  background: white;
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+input, select, textarea {
+  font-family: inherit;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.main-nav {
+  display: flex;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.main-nav a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.main-nav a.active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-chip {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page h1 {
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-muted);
+  margin-top: 0;
+}
+
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-error {
+  background: #fef2f2;
+  color: var(--color-danger);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: var(--color-card);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 360px;
+}
+
+.auth-card button[type="submit"] {
+  width: 100%;
+}
+
+.auth-subtitle {
+  color: var(--color-muted);
+  margin-top: 0;
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.inline-fields {
+  display: flex;
+  gap: 1rem;
+}
+
+.inline-fields label {
+  flex: 1;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  text-align: left;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.entry-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.entry-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.entry-card-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.entry-note {
+  margin: 0.25rem 0;
+  color: var(--color-text);
+}
+
+.visible-badge {
+  background: #ecfdf5;
+  color: var(--color-success);
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+}
+
+.page-loading {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-muted);
+}
