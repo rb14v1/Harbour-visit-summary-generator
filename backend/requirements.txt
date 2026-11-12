@@ -1,8 +1,9 @@
 # Security pins (sec.no_critical_cves): Django 5.2 LTS patch release fixes
-# CVE-2025-64459 (CRITICAL) and CVE-2024-53908 (HIGH); DRF 3.16.x is required
-# for Django 5.2 support. See SECURITY-ACCEPTED-RISKS.md for unfixed CVEs.
-Django==5.2.9
-djangorestframework==3.16.1
+# CVE-2025-64459 (CRITICAL), CVE-2024-53908 (HIGH) and the later 5.2.x HIGH
+# CVEs (e.g. CVE-2026-1287, CVE-2026-3902); DRF 3.17.x supports Django 5.2 and
+# replaces 3.16.1. See SECURITY-ACCEPTED-RISKS.md for unfixed CVEs.
+Django==5.2.13
+djangorestframework==3.17.0
 djangorestframework-simplejwt==5.3.1
 psycopg2-binary==2.9.9
 django-cors-headers==4.4.0
