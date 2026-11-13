@@ -6,10 +6,18 @@ with a generated VisitSummary, a couple left pending to demonstrate the
 "not yet generated" state.
 
 Summaries are produced by calling the REAL `generate_visit_summary()`
-function (apps/common/ai.py). At migrate time OPENAI_API_KEY is unset, so
-this resolves to the deterministic offline stub - meaning anyone running a
-fresh `manage.py migrate` (with no API key configured) gets byte-identical
-seed summaries to what shipped here.
+function (apps/common/ai.py), with allow_remote=False so it always resolves
+to the deterministic offline stub - meaning anyone running a fresh
+`manage.py migrate` gets byte-identical seed summaries to what shipped here.
+
+That argument is what makes the statement above true. This migration
+originally assumed OPENAI_API_KEY would simply be unset at migrate time;
+that assumption does not hold when a deployment platform runs migrations as
+a job carrying the app's full production environment. Under that
+environment the seed made one live model call per visit row - billable, and
+each one able to fail the migration and with it the deploy.
+
+A model or network fault must never be able to fail a schema migration.
 """
 from datetime import date
 
@@ -202,6 +210,7 @@ def seed_demo_data(apps, schema_editor):
                 clinical_notes=visit.clinical_notes,
                 diagnosis=visit.diagnosis,
                 treatment_plan=visit.treatment_plan,
+                allow_remote=False,
             )
             VisitSummary.objects.get_or_create(
                 visit=visit, defaults={"patient_friendly_summary": summary_text}

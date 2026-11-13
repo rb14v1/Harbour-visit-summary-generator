@@ -37,39 +37,80 @@ def is_stub_mode() -> bool:
     return not bool(settings.OPENAI_API_KEY)
 
 
+def _client():
+    """An OpenAI client pointed at whichever OpenAI-compatible endpoint is configured.
+
+    With OPENAI_BASE_URL unset this is the stock client talking to
+    api.openai.com, which is what this app did before. Set it to an Azure
+    OpenAI resource's `/openai/v1/` path and the same client with the same
+    key reaches Azure instead - Azure serves an OpenAI-compatible surface
+    there, so no AzureOpenAI client and no branching is needed.
+
+    The import lives here rather than at module scope so that a broken or
+    absent `openai` install is raised inside the caller's try block, not at
+    import time.
+    """
+    from openai import OpenAI
+
+    base_url = getattr(settings, "OPENAI_BASE_URL", "") or ""
+    # Passing base_url=None would override the library's own default with
+    # nothing, so an unset value is left out of the call entirely.
+    return OpenAI(
+        api_key=settings.OPENAI_API_KEY,
+        **({"base_url": base_url} if base_url else {}),
+    )
+
+
 def generate_visit_summary(
     chief_complaint: str,
     clinical_notes: str,
     diagnosis: str,
     treatment_plan: str,
+    *,
+    allow_remote: bool = True,
 ) -> str:
     """Return a plain-language, patient-friendly summary paragraph for a
     visit, translating clinical jargon into something a patient can
     understand.
 
-    Real path (OPENAI_API_KEY set): calls the OpenAI chat completions API
-    with `settings.OPENAI_CHAT_MODEL`.
-    Stub path (no key): deterministic templated paragraph built directly
-    from the input fields - see module docstring.
-    """
-    if settings.OPENAI_API_KEY:
-        from openai import OpenAI
+    Real path (OPENAI_API_KEY set, allow_remote): calls the OpenAI chat
+    completions API with `settings.OPENAI_CHAT_MODEL`.
+    Stub path (no key, allow_remote=False, or any failure on the real path):
+    deterministic templated paragraph built directly from the input fields -
+    see module docstring.
 
-        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    Pass allow_remote=False from any caller that must not depend on a
+    network service - the seed-data migration does, so that applying
+    migrations never reaches out to a model.
+
+    This function used to have no error handling at all: a dependency,
+    configuration or network fault propagated to the caller. In the seed
+    migration that meant a failed `manage.py migrate` and a failed deploy.
+    It now degrades to the stub the same way the no-key path does.
+    """
+    if allow_remote and settings.OPENAI_API_KEY:
         user_content = (
             f"Chief complaint: {chief_complaint}\n"
             f"Clinical notes: {clinical_notes}\n"
             f"Diagnosis: {diagnosis}\n"
             f"Treatment plan: {treatment_plan}"
         )
-        response = client.chat.completions.create(
-            model=settings.OPENAI_CHAT_MODEL,
-            messages=[
-                {"role": "system", "content": _SYSTEM_PROMPT},
-                {"role": "user", "content": user_content},
-            ],
-        )
-        return response.choices[0].message.content
+        try:
+            client = _client()
+            response = client.chat.completions.create(
+                model=settings.OPENAI_CHAT_MODEL,
+                messages=[
+                    {"role": "system", "content": _SYSTEM_PROMPT},
+                    {"role": "user", "content": user_content},
+                ],
+            )
+            content = response.choices[0].message.content
+        except Exception:  # noqa: BLE001 - never let an AI/network error crash the caller
+            return _stub_summary(chief_complaint, clinical_notes, diagnosis, treatment_plan)
+        # A model can return an empty or null message; the stub is better than nothing.
+        if not (content or "").strip():
+            return _stub_summary(chief_complaint, clinical_notes, diagnosis, treatment_plan)
+        return content
 
     return _stub_summary(chief_complaint, clinical_notes, diagnosis, treatment_plan)
 
