@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -39,13 +40,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Adds `role` to the JWT claims.
+    """Uses email instead of username for authentication. Adds `role` to JWT claims."""
 
-    The claim is a convenience for the frontend only - every request is
-    re-validated server-side against the live User.role in the database, so
-    a stale or tampered claim can never grant access beyond what the DB
-    currently allows.
-    """
+    username_field = User.USERNAME_FIELD
 
     @classmethod
     def get_token(cls, user):
